@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>People Counting System</title>
+    <script src="https://cdn.jsdelivr.net/npm/socket.io@4.0.1/dist/socket.io.min.js"></script>
+</head>
+<body>
+    <h1>People Counting System</h1>
+    <div id="camera-feed">
+        <img src="{{ url_for('video_feed') }}" width="640" height="480" />
+    </div>
+    <div id="status">
+        <p id="people-count">People Inside: 0</p>
+        <p id="light-status">Light Status: OFF</p>
+    </div>
+
+    <script>
+        // Connect to the Flask-SocketIO server
+        var socket = io.connect('http://' + document.domain + ':' + location.port);
+
+        // Listen for the update_count event from the backend
+        socket.on('update_count', function(data) {
+            // Update the number of people inside
+            document.getElementById('people-count').textContent = 'People Inside: ' + data.count;
+
+            // Update light status based on overload
+            if (data.overload) {
+                document.getElementById('light-status').textContent = 'Light Status: ON';
+            } else {
+                document.getElementById('light-status').textContent = 'Light Status: OFF';
+            }
+        });
+    </script>
+</body>
+</html>
